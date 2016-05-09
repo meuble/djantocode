@@ -3,6 +3,7 @@ require 'sinatra'
 require 'haml'
 require 'yaml'
 require "active_record"
+require "awesome_print"
 
 enable :sessions
 set :haml, :format => :html5
@@ -31,16 +32,27 @@ end
 post '/gate' do
   if password == params[:password]
     session[:has_access] = true
-    redirect '/code/new'
+    redirect '/codes/new'
   else
     redirect '/'
   end
 end
 
-get '/code/new' do
+get '/codes/new' do
   if session[:has_access]
     haml :form
   else
     redirect '/'
+  end
+end
+
+post '/codes' do
+  count = (params[:count].to_s.to_i || 1)
+  codes = (0...count).to_a.map { Code.new(:program => params[:program]) }
+  ap codes
+  if codes.inject(true) {|a, c| a && c.save }
+    redirect "/codes/thanks/#{params[:program]}/#{count}"
+  else
+    redirect "/codes/new"
   end
 end
