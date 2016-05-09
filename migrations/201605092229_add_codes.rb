@@ -13,7 +13,7 @@ database_config = File.exists?(database_config_file) ? YAML::load(File.read(data
 ActiveRecord::Base.establish_connection(database_config)
 
 ActiveRecord::Schema.define(:version => 201605092229) do
-  create_table "code", :force => true do |t|
+  create_table "codes", :force => true do |t|
     t.string "program"
     t.datetime "created_at"
     t.datetime "updated_at"
