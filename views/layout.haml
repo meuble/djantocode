@@ -1,0 +1,12 @@
+!!!
+%html{:xmlns => "http://www.w3.org/1999/xhtml", "xml:lang" => "fr", :lang => "fr", 'xmlns:fb' => "http://www.facebook.com/2008/fbml"}
+  %head
+    %title
+      Paternité
+    %link{:rel => "stylesheet", :href => "/normalize.css", :type => "text/css", :media => "screen", :charset =>"utf-8"}
+    %link{:rel => "stylesheet", :href => "/application.css", :type => "text/css", :media => "screen", :charset =>"utf-8"}
+    %script{:type => "text/javascript", :src => "/jquery.min.js"}
+    %script{:type => "text/javascript", :src => "/application.js"}
+  %body
+    %div#application
+      = yield
