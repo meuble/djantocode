@@ -1,0 +1,22 @@
+%div{:id => "presentation", :class => "question"}
+  %div{:id => "presentation_container"}
+    %div{:class => "question_container"}
+      %h1
+        Djantocode
+      %p
+        Entrez le programme et le nombre de QRCode voulu. Validez et téléchargez les codes.
+
+    %form{:action => "/forms", :method => "post"}
+      %div{:class => "question_container"}
+        %label{:for => "program"}
+          %h2
+            Quel est le programme ?
+        %input{:type => "text", :name => "program", :id => "program"}
+      %div{:class => "question_container"}
+        %label{:for => "count"}
+          %h2
+            Quel est le nombre de code désiré ?
+        %input{:type => "text", :name => "count", :id => "count"}
+      %p.submit
+        %button{:type => :submit, :value => "Valider"}
+          Valider

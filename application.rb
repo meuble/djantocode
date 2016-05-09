@@ -36,3 +36,11 @@ post '/gate' do
     redirect '/'
   end
 end
+
+get '/code/new' do
+  if session[:has_access]
+    haml :form
+  else
+    redirect '/'
+  end
+end

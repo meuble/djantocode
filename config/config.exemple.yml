@@ -1,4 +1,4 @@
-
+password: "Haxor"
 database:
   adapter: 'mysql2' # or 'postgresql' or 'sqlite3'
   host: 'localhost'
