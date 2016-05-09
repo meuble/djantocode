@@ -7,3 +7,4 @@ gem 'activerecord'
 gem 'mysql2'
 gem "awesome_print"
 gem "rqrcode"
+gem "prawn"

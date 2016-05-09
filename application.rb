@@ -5,6 +5,9 @@ require 'yaml'
 require "active_record"
 require "awesome_print"
 require 'rqrcode'
+require "prawn"
+require "prawn/measurement_extensions"
+require 'stringio'
 
 enable :sessions
 set :haml, :format => :html5
@@ -21,8 +24,8 @@ password = config["password"] || ENV["WEBSITE_PASSWORD"]
 class Code < ActiveRecord::Base
   validates_presence_of :program
 
-  def image
-    RQRCode::QRCode.new("#{self.program};#{self.id}").as_png(
+  def png_image
+    RQRCode::QRCode.new("#{self.program}#{self.id}").as_png(
       :resize_gte_to => false,
       :resize_exactly_to => false,
       :fill => 'white',
@@ -31,6 +34,20 @@ class Code < ActiveRecord::Base
       :border_modules => 4,
       :module_px_size => 6,
       :file => nil)
+  end
+
+  def self.pdf(program_name, limit = 1)
+    Prawn::Document.new(:left_margin => 3, :right_margin => 3, :top_margin => 10, :bottom_margin => 10) do
+      define_grid(:columns => 5, :rows => 13, :column_gutter => 3.5.mm, :row_gutter => 0)
+      font_size 9
+      Code.where(:program => program_name).limit(limit).each_with_index do |code, index|
+        grid(index / 5, index % 5).bounding_box do
+          image StringIO.new(code.png_image.to_s), :at => [1, cursor - 2], :fit => [19.mm, 19.mm]
+          draw_text code.program, :at => [18.mm, 12.mm]
+          draw_text code.id, :at => [18.mm, 8.mm]
+        end
+      end
+    end
   end
 end
 
@@ -75,10 +92,9 @@ get '/codes/thanks/:program/:count' do
 end
 
 get '/codes/download/:program/:count' do
-  @code = Code.where(:program => params[:program]).last
-  image = @code.image
+  data = Code.pdf(params[:program], params[:count])
 
-  content_type 'application/png'
-  attachment "#{@code.program}-#{Time.now.year}#{Time.now.month}#{Time.now.day}#{Time.now.min}#{Time.now.sec}.png"
-  image.to_s
+  content_type 'application/pdf'
+  attachment "#{params[:program]}-#{Time.now.year}#{Time.now.month}#{Time.now.day}#{Time.now.min}#{Time.now.sec}.pdf"
+  data.render
 end
