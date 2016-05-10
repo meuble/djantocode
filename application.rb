@@ -79,7 +79,7 @@ end
 post '/codes' do
   count = (params[:count].to_s.to_i || 1)
   codes = (0...count).to_a.map { Code.new(:program => params[:program]) }
-  ap codes
+
   if codes.inject(true) {|a, c| a && c.save }
     redirect "/codes/thanks/#{params[:program]}/#{count}"
   else
