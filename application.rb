@@ -25,7 +25,7 @@ class Code < ActiveRecord::Base
   validates_presence_of :program
 
   def png_image
-    RQRCode::QRCode.new("#{self.program}#{self.id}").as_png(
+    RQRCode::QRCode.new("#{self.program}#{self.code}").as_png(
       :resize_gte_to => false,
       :resize_exactly_to => false,
       :fill => 'white',
@@ -44,7 +44,7 @@ class Code < ActiveRecord::Base
         grid(index / 5, index % 5).bounding_box do
           image StringIO.new(code.png_image.to_s), :at => [1, cursor - 2], :fit => [19.mm, 19.mm]
           draw_text code.program, :at => [18.mm, 12.mm]
-          draw_text code.id, :at => [18.mm, 8.mm]
+          draw_text code.code, :at => [18.mm, 8.mm]
         end
       end
     end
