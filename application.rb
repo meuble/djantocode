@@ -70,6 +70,8 @@ end
 
 get '/codes/new' do
   if session[:has_access]
+    last_code = Code.order(:code).last
+    @last_key = last_code ? last_code.code : 0
     haml :form
   else
     redirect '/'
@@ -78,7 +80,7 @@ end
 
 post '/codes' do
   count = (params[:count].to_s.to_i || 1)
-  codes = (0...count).to_a.map { Code.new(:program => params[:program]) }
+  codes = (0...count).to_a.inject([]) {|acc, i| acc << Code.new(:program => params[:program], :code => ((params[:start_id] || 0).to_i + i).to_s.rjust(6, "0")); acc }
 
   if codes.inject(true) {|a, c| a && c.save }
     redirect "/codes/thanks/#{params[:program]}/#{count}"

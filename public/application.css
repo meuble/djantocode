@@ -49,7 +49,7 @@ form input[type=password] {
   left: 0;
   top: 0;
   background-color: #E5FAE3;
-  padding: 5%;
+  padding: 3%;
 }
 
 .button,
@@ -69,7 +69,7 @@ button {
 
 #presentation_container {
   margin: 1% auto;
-  padding: 4%;
+  padding: 3%;
   width: 50%;
   background-color: rgba(51,51,51,0.3);
 }
