@@ -38,13 +38,13 @@ class Code < ActiveRecord::Base
 
   def self.pdf(program_name, start = 0)
     Prawn::Document.new(:left_margin => 3, :right_margin => 3, :top_margin => 10, :bottom_margin => 10) do
-      define_grid(:columns => 5, :rows => 13, :column_gutter => 3.5.mm, :row_gutter => 0)
+      define_grid(:columns => 5, :rows => 13, :column_gutter => 3.5.mm, :row_gutter => 2)
       font_size 9
       Code.where(:program => program_name).where("code >= ?", start.to_s.rjust(6, "0")).limit(start + 65).each_with_index do |code, index|
         grid(index / 5, index % 5).bounding_box do
           image StringIO.new(code.png_image.to_s), :at => [1, cursor - 2], :fit => [19.mm, 19.mm]
-          draw_text code.program, :at => [18.mm, 12.mm]
-          draw_text code.code, :at => [18.mm, 8.mm]
+          draw_text code.program, :at => [18.mm, 10.mm]
+          draw_text code.code, :at => [18.mm, 6.mm]
         end
       end
     end
