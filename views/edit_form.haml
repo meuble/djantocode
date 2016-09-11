@@ -3,9 +3,9 @@
     %div{:class => "question_container"}
       %h1
         Djantocode
-
-      %p.error
-        Le dernier code généré pour #{session[:program]} est #{@last_key}
+      -if params[:error]
+        %p.error
+          Le dernier code généré pour #{session[:program]} est #{@last_key}
     %form{:action => "/codes/update", :method => "get"}
       %div{:class => "question_container"}
         %label{:for => "start_id"}
