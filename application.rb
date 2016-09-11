@@ -36,11 +36,11 @@ class Code < ActiveRecord::Base
       :file => nil)
   end
 
-  def self.pdf(program_name, limit = 1)
+  def self.pdf(program_name, start = 0)
     Prawn::Document.new(:left_margin => 3, :right_margin => 3, :top_margin => 10, :bottom_margin => 10) do
       define_grid(:columns => 5, :rows => 13, :column_gutter => 3.5.mm, :row_gutter => 0)
       font_size 9
-      Code.where(:program => program_name).limit(limit).each_with_index do |code, index|
+      Code.where(:program => program_name).where("code >= ?", start.to_s.rjust(6, "0")).limit(start + 65).each_with_index do |code, index|
         grid(index / 5, index % 5).bounding_box do
           image StringIO.new(code.png_image.to_s), :at => [1, cursor - 2], :fit => [19.mm, 19.mm]
           draw_text code.program, :at => [18.mm, 12.mm]
@@ -63,7 +63,27 @@ post '/gate' do
   if passwords.keys.include?(params[:password])
     session[:has_access] = true
     session[:program] = passwords[params[:password]]
-    redirect '/codes/new'
+    redirect '/codes/choices'
+  else
+    redirect '/'
+  end
+end
+
+get '/codes/choices' do
+  if session[:has_access]
+    haml :choices
+  else
+    redirect '/'
+  end
+end
+
+post '/codes/choices' do
+  if session[:has_access]
+    if params[:choice][:action] == "new"
+      redirect '/codes/new'
+    else
+      redirect '/codes/edit'
+    end
   else
     redirect '/'
   end
@@ -73,31 +93,53 @@ get '/codes/new' do
   if session[:has_access]
     last_code = Code.order(:code).last
     @last_key = last_code ? last_code.code : 0
-    haml :form
+    haml :new_form
+  else
+    redirect '/'
+  end
+end
+
+get '/codes/edit' do
+  if session[:has_access]
+    last_code = Code.order(:code).last
+    @last_key = last_code ? last_code.code : 0
+    haml :edit_form
   else
     redirect '/'
   end
 end
 
 post '/codes' do
-  count = (params[:count].to_s.to_i || 1)
-  codes = (0...count).to_a.inject([]) {|acc, i| acc << Code.new(:program => params[:program], :code => ((params[:start_id] || 0).to_i + i).to_s.rjust(6, "0")); acc }
+  count = 65
+  last_code = Code.order(:code).last
+  last_key = last_code ? last_code.code : 0
+  codes = (1...count + 1).to_a.inject([]) {|acc, i| acc << Code.new(:program => session[:program], :code => ((last_key || 0).to_i + i).to_s.rjust(6, "0")); acc }
 
   if codes.inject(true) {|a, c| a && c.save }
-    redirect "/codes/thanks/#{params[:program]}/#{count}"
+    redirect "/codes/thanks/#{last_key}"
   else
     redirect "/codes/new"
   end
 end
 
-get '/codes/thanks/:program/:count' do
+get '/codes/update' do
+  last_code = Code.order(:code).last
+  if params[:start_id].to_i > (last_code ? last_code.code : 0).to_i
+    redirect '/codes/edit?error=true'
+  else
+    start = ((params[:start_id].to_i || 0) / 65) * 65
+    redirect "/codes/thanks/#{start}"
+  end
+end
+
+get '/codes/thanks/:count' do
   haml :thanks
 end
 
-get '/codes/download/:program/:count' do
-  data = Code.pdf(params[:program], params[:count])
+get '/codes/download/:program/:start' do
+  data = Code.pdf(session[:program], params[:start].to_i)
 
   content_type 'application/pdf'
-  attachment "#{params[:program]}-#{Time.now.year}#{Time.now.month}#{Time.now.day}#{Time.now.min}#{Time.now.sec}.pdf"
+  attachment "#{session[:program]}-#{Time.now.year}#{Time.now.month}#{Time.now.day}#{Time.now.min}#{Time.now.sec}.pdf"
   data.render
 end

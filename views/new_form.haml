@@ -1,0 +1,12 @@
+%div{:id => "presentation", :class => "question"}
+  %div{:id => "presentation_container"}
+    %div{:class => "question_container"}
+      %h1
+        Djantocode
+      %p
+        Le dernier identifiant créé pour le programme #{session[:program]} était #{@last_key}
+
+    %form{:action => "/codes", :method => "post"}
+      %p.submit
+        %button{:type => :submit, :value => "Valider"}
+          Valider

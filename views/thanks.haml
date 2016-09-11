@@ -3,5 +3,5 @@
     %p
       Vos codes on été préparés. Vous pouvez maintenant les télécharger.
     %p
-      %a{:href => "/codes/download/#{params[:program]}/#{params[:count]}", :class => "button"}
+      %a{:href => "/codes/download/#{session[:program]}/#{params[:count]}", :class => "button"}
         Télécharger

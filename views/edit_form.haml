@@ -1,0 +1,17 @@
+%div{:id => "presentation", :class => "question"}
+  %div{:id => "presentation_container"}
+    %div{:class => "question_container"}
+      %h1
+        Djantocode
+
+      %p.error
+        Le dernier code généré pour #{session[:program]} est #{@last_key}
+    %form{:action => "/codes/update", :method => "get"}
+      %div{:class => "question_container"}
+        %label{:for => "start_id"}
+          %h2
+            Quel numéro ?
+        %input{:type => "text", :name => "start_id", :id => "start_id"}
+      %p.submit
+        %button{:type => :submit, :value => "Valider"}
+          Valider

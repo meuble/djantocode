@@ -1,0 +1,20 @@
+%div{:id => "presentation", :class => "question"}
+  %div{:id => "presentation_container"}
+    %div{:class => "question_container"}
+      %h1
+        Djantocode
+
+    %form{:action => "/codes/choices", :method => "post"}
+      %div{:class => "question_container"}
+        %label{:for => "choice_action"}
+          %h2
+            Que voulez vous faire ?
+        %select{:name => "choice[action]", :id => "choice_action"}
+          %option{:value => "new"}
+            Imprimer une nouvelle planche
+          %option{:value => "edit"}
+            Rééditer un numéro
+
+      %p.submit
+        %button{:type => :submit, :value => "Valider"}
+          Valider
