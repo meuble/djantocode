@@ -19,7 +19,7 @@ em {
   height: 100%;
   left: 0;
   top: 0;
-  background-color: #FADEDE;
+  background-color: rgb(253,228,0);
 }
 
 .container,
@@ -35,11 +35,20 @@ em {
   display: block;
 }
 
+form select,
 form input[type=text],
 form input[type=password] {
   font-size: 160%;
   width: 100%;
   padding: 1%;
+}
+
+form select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 1.5em;
+  background: #fff url(http://www.gtmidwest.com/images/select-arrow.png) no-repeat right center;
 }
 
 .question {
@@ -48,7 +57,7 @@ form input[type=password] {
   height: 100%;
   left: 0;
   top: 0;
-  background-color: #E5FAE3;
+  background-color: rgb(253,228,0);
   padding: 3%;
 }
 
@@ -71,9 +80,14 @@ button {
   margin: 1% auto;
   padding: 3%;
   width: 50%;
-  background-color: rgba(51,51,51,0.3);
+  background-color: #fff;
 }
 
 #thanks p {
   margin-top: 5%;
+}
+
+.error {
+  font-size: 1.3em;
+  color: red;
 }
