@@ -19,7 +19,7 @@ config = File.exists?(config_file) ? YAML::load_file(config_file) : {}
 database_config = File.exists?(database_config_file) ? YAML::load(File.read(database_config_file))["production"] : config["database"]
 ActiveRecord::Base.establish_connection(database_config)
 
-password = config["password"] || ENV["WEBSITE_PASSWORD"]
+passwords = JSON.parse(config["password"] || ENV["WEBSITE_PASSWORD"])
 
 class Code < ActiveRecord::Base
   validates_presence_of :program
@@ -60,8 +60,9 @@ get '/reset_session' do
 end
 
 post '/gate' do
-  if password == params[:password]
+  if passwords.keys.include?(params[:password])
     session[:has_access] = true
+    session[:program] = passwords[params[:password]]
     redirect '/codes/new'
   else
     redirect '/'

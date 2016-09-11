@@ -1,4 +1,4 @@
-password: "Haxor"
+password: {"program1":"Haxor","program2":"RoXor"} # Hash where keys are program names, and values associated passwords
 database:
   adapter: 'mysql2' # or 'postgresql' or 'sqlite3'
   host: 'localhost'
