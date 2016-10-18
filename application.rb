@@ -37,10 +37,10 @@ class Code < ActiveRecord::Base
   end
 
   def self.pdf(program_name, start = 0)
-    Prawn::Document.new(:left_margin => 3, :right_margin => 3, :top_margin => 10, :bottom_margin => 10) do
-      define_grid(:columns => 5, :rows => 13, :column_gutter => 3.5.mm, :row_gutter => 2)
+    Prawn::Document.new(:page_size => "A4", :left_margin => 8.mm, :right_margin => 3, :top_margin => 7.mm, :bottom_margin => 10) do
+      define_grid(:columns => 5, :rows => 13, :column_gutter => 3.5.mm, :row_gutter => 0.5.mm)
       font_size 9
-      Code.where(:program => program_name).where("code >= ?", start.to_s.rjust(6, "0")).limit(start + 65).each_with_index do |code, index|
+      Code.where(:program => program_name).where("code >= ?", (start + 1).to_s.rjust(6, "0")).limit(start + 65).each_with_index do |code, index|
         grid(index / 5, index % 5).bounding_box do
           image StringIO.new(code.png_image.to_s), :at => [1, cursor - 2], :fit => [19.mm, 19.mm]
           draw_text code.program, :at => [18.mm, 10.mm]
@@ -91,7 +91,7 @@ end
 
 get '/codes/new' do
   if session[:has_access]
-    last_code = Code.order(:code).last
+    last_code = Code.where(:program => session[:program]).order(:code).last
     @last_key = last_code ? last_code.code : 0
     haml :new_form
   else
@@ -101,7 +101,7 @@ end
 
 get '/codes/edit' do
   if session[:has_access]
-    last_code = Code.order(:code).last
+    last_code = Code.where(:program => session[:program]).order(:code).last
     @last_key = last_code ? last_code.code : 0
     haml :edit_form
   else
@@ -111,7 +111,7 @@ end
 
 post '/codes' do
   count = 65
-  last_code = Code.order(:code).last
+  last_code = Code.where(:program => session[:program]).order(:code).last
   last_key = last_code ? last_code.code : 0
   codes = (1...count + 1).to_a.inject([]) {|acc, i| acc << Code.new(:program => session[:program], :code => ((last_key || 0).to_i + i).to_s.rjust(6, "0")); acc }
 
@@ -123,7 +123,7 @@ post '/codes' do
 end
 
 get '/codes/update' do
-  last_code = Code.order(:code).last
+  last_code = Code.where(:program => session[:program]).order(:code).last
   if params[:start_id].to_i > (last_code ? last_code.code : 0).to_i
     redirect '/codes/edit?error=true'
   else
